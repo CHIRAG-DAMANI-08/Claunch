@@ -21,11 +21,11 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-28)
 
 **Core value:** One command opens every worktree with the right Claude session
-**Current focus:** Phase 7: Session Memory Synchronization
+**Current focus:** Phase 7: Session Memory Sync & Interactive Menu
 
 ## Current Position
 
-Phase: 7 of 7 (Session Memory Synchronization)
+Phase: 7 of 7 (Session Memory Sync & Interactive Menu)
 Plan: 0 of 2 in current phase
 Status: Ready to plan
 Last activity: 2026-06-28 — Phase 6 completed, Phase 7 added

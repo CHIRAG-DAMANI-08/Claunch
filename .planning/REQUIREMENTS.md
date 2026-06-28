@@ -40,6 +40,13 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **TERM-07**: PowerShell semicolon escaping is handled correctly for `wt.exe` multi-tab commands
 - [ ] **TERM-08**: Window is forced to be new (`-w -1`) not added to existing terminal
 
+### Interactive Selection Menu
+
+- [ ] **MENU-01**: Running `claunch --menu` (or `claunch -m` or `claunch` without arguments) displays an interactive CLI selection menu of all discovered worktrees.
+- [ ] **MENU-02**: Menu supports navigation via arrow keys (or `j`/`k`), multi-selection using `Space`, and opening all selected worktrees at once in a new window via `Enter`.
+- [ ] **MENU-03**: Menu supports launching the highlighted worktree in a new tab of the current window without losing focus on the menu tab (using `; focus-tab -t 0`).
+- [ ] **MENU-04**: The current active worktree is highlighted in the menu listing.
+
 ### Error Handling
 
 - [ ] **ERR-01**: Missing Git displays "Git is not installed."
@@ -75,7 +82,7 @@ Deferred to future release. Tracked but not in current roadmap.
 
 | Feature | Reason |
 |---------|--------|
-| GUI / TUI / Electron | Philosophy: tiny Unix utility |
+| Heavy GUI (Electron) / complex TUIs | Philosophy: tiny Windows utility; simple CLI menu is supported |
 | PTY management | Anti-pattern per PRD; use wt.exe instead |
 | Background daemon | Single invocation tool |
 | Config files / themes / settings | Zero configuration by design |
@@ -83,7 +90,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | Telemetry | Privacy and simplicity |
 | WSL / Linux / macOS | Windows 11 only |
 | Auto-install missing tools | Just error clearly; user installs |
-| Interactive session picker | No user interaction in the flow |
+| Interactive prompt session picker | Out of scope; we pick worktrees, not individual prompts |
 | Cross-repo session management | Each repo is independent |
 
 ## Traceability
@@ -120,6 +127,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ERR-02 | Phase 1 | Pending |
 | ERR-03 | Phase 1 | Pending |
 | ERR-04 | Phase 1 | Pending |
+| MENU-01 | Phase 7 | Pending |
+| MENU-02 | Phase 7 | Pending |
+| MENU-03 | Phase 7 | Pending |
+| MENU-04 | Phase 7 | Pending |
 | PKG-01 | Phase 6 | Pending |
 | PKG-02 | Phase 1 | Pending |
 | PKG-03 | Phase 6 | Pending |
@@ -127,8 +138,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PKG-05 | Phase 1 | Pending |
 
 **Coverage:**
-- v1 requirements: 33 total
-- Mapped to phases: 33
+- v1 requirements: 37 total
+- Mapped to phases: 37
 - Unmapped: 0 ✓
 
 ---

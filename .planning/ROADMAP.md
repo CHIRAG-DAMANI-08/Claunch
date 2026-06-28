@@ -16,7 +16,7 @@ Claunch is built as a linear pipeline: first set up the project foundation and t
 - [x] **Phase 4: Claude & Terminal Launching** - Build Claude command strings and launch Windows Terminal tabs (completed 2026-06-28)
 - [x] **Phase 5: CLI Integration** - Wire all modules together into the `claunch` command (completed 2026-06-28)
 - [x] **Phase 6: Packaging & Distribution** - Bundle with tsup and prepare for npm global install (completed 2026-06-28)
-- [ ] **Phase 7: Session Memory Synchronization** - Sync Claude Code memory and session transcripts across git worktree terminal tabs
+- [ ] **Phase 7: Session Memory Sync & Interactive Menu** - Sync Claude memory and transcripts, and implement interactive worktree selection TUI menu
 
 ## Phase Details
 
@@ -115,18 +115,21 @@ Plans:
 - [ ] 06-01: Configure tsup build, package.json bin field, and npm metadata
 - [ ] 06-02: End-to-end verification of global install and execution
 
-### Phase 7: Session Memory Synchronization
-**Goal**: Sync Claude Code memory and session transcripts across git worktree terminal tabs, allowing Claude sessions to query other worktree contexts and learn from other sessions.
+### Phase 7: Session Memory Sync & Interactive Menu
+**Goal**: Sync Claude Code memory and transcripts across git worktree terminal tabs, and implement a ccmanager-like interactive selector menu with focus-retention background tab opening.
 **Depends on**: Phase 6
-**Requirements**: SESS-08, SESS-09, SESS-10
+**Requirements**: SESS-08, SESS-09, SESS-10, MENU-01, MENU-02, MENU-03, MENU-04
 **Success Criteria** (what must be TRUE):
-  1. Claude sessions can query details/history of another active session/branch.
-  2. `claunch` provides a command to export or view session histories easily.
-  3. Memory (`MEMORY.md`) changes from one worktree session are synced automatically or easily accessible by others.
-**Plans**: TBD
+  1. Claude sessions can query details/history of another active session/branch using `claunch log <branch>`.
+  2. Memory (`MEMORY.md`) changes from one worktree session are synced automatically via directory junctions.
+  3. Running `claunch --menu` (or `claunch` with no arguments) shows a fully functional interactive worktree selector menu.
+  4. Selecting a worktree and pressing Enter in the menu opens it in a new tab without losing focus on the menu tab.
+  5. Space key selects multiple worktrees to open them all in a new window at once.
+**Plans**: 2 plans
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 7 to break down)
+- [ ] 07-01: Implement session log querying subcommand and automatic memory junction sync
+- [ ] 07-02: Implement interactive CLI selection menu with focus-retention tab spawning
 
 ## Progress
 
@@ -142,5 +145,5 @@ Phase 5 depends on 2, 3, 4. Phase 6 depends on 5. Phase 7 depends on Phase 6.
 | 4. Claude & Terminal Launching | 2/2 | Complete    | 2026-06-28 |
 | 5. CLI Integration | 2/2 | Complete    | 2026-06-28 |
 | 6. Packaging & Distribution | 2/2 | Complete    | 2026-06-28 |
-| 7. Session Memory Synchronization | 0/2 | Not started | - |
+| 7. Session Memory Sync & Interactive Menu | 0/2 | Not started | - |
 
