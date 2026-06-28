@@ -11,6 +11,7 @@ import type { TabSpec } from './types/index.js';
 import { getSessionLog } from './claude/sessionLog.js';
 import { syncMemoryJunctions } from './claude/memorySync.js';
 import { startInteractiveMenu } from './terminal/interactiveMenu.js';
+import { checkForUpdates } from './utils/versionCheck.js';
 
 function handleError(error: unknown): void {
   if (error instanceof ClaunchError) {
@@ -37,6 +38,9 @@ export function runCli(argv: string[] = process.argv): void {
     .option('-a, --all', 'Launch all worktrees immediately in a new window')
     .action(async (options) => {
       try {
+        // Kick off update check in background immediately
+        const updateCheckPromise = checkForUpdates();
+
         // 1. Verify environment and discover repo root
         const repoRoot = validateEnvironment();
 
@@ -78,6 +82,9 @@ export function runCli(argv: string[] = process.argv): void {
           // Default: open interactive selection menu
           await startInteractiveMenu(repoRoot, worktrees, sessionStore, openWindowsTerminal);
         }
+
+        // Await the background check to display any pending upgrade warning
+        await updateCheckPromise;
       } catch (error) {
         handleError(error);
       }

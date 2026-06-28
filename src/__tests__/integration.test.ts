@@ -8,6 +8,11 @@ import { ClaunchError } from '../types/index.js';
 import { syncMemoryJunctions } from '../claude/memorySync.js';
 import { startInteractiveMenu } from '../terminal/interactiveMenu.js';
 import { getSessionLog } from '../claude/sessionLog.js';
+import { checkForUpdates } from '../utils/versionCheck.js';
+
+vi.mock('../utils/versionCheck.js', () => ({
+  checkForUpdates: vi.fn().mockResolvedValue(undefined),
+}));
 
 vi.mock('../utils/environment.js', () => ({
   validateEnvironment: vi.fn(),
