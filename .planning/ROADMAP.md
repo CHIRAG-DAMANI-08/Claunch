@@ -16,6 +16,7 @@ Claunch is built as a linear pipeline: first set up the project foundation and t
 - [x] **Phase 4: Claude & Terminal Launching** - Build Claude command strings and launch Windows Terminal tabs (completed 2026-06-28)
 - [x] **Phase 5: CLI Integration** - Wire all modules together into the `claunch` command (completed 2026-06-28)
 - [x] **Phase 6: Packaging & Distribution** - Bundle with tsup and prepare for npm global install (completed 2026-06-28)
+- [ ] **Phase 7: Session Memory Synchronization** - Sync Claude Code memory and session transcripts across git worktree terminal tabs
 
 ## Phase Details
 
@@ -114,17 +115,32 @@ Plans:
 - [ ] 06-01: Configure tsup build, package.json bin field, and npm metadata
 - [ ] 06-02: End-to-end verification of global install and execution
 
+### Phase 7: Session Memory Synchronization
+**Goal**: Sync Claude Code memory and session transcripts across git worktree terminal tabs, allowing Claude sessions to query other worktree contexts and learn from other sessions.
+**Depends on**: Phase 6
+**Requirements**: SESS-08, SESS-09, SESS-10
+**Success Criteria** (what must be TRUE):
+  1. Claude sessions can query details/history of another active session/branch.
+  2. `claunch` provides a command to export or view session histories easily.
+  3. Memory (`MEMORY.md`) changes from one worktree session are synced automatically or easily accessible by others.
+**Plans**: TBD
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 7 to break down)
+
 ## Progress
 
 **Execution Order:**
 Phases 2, 3, 4 can execute in parallel (all depend only on Phase 1).
-Phase 5 depends on 2, 3, 4. Phase 6 depends on 5.
+Phase 5 depends on 2, 3, 4. Phase 6 depends on 5. Phase 7 depends on Phase 6.
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Project Foundation | 0/3 | Complete    | 2026-06-28 |
-| 2. Git Worktree Discovery | 0/2 | Complete    | 2026-06-28 |
-| 3. Session Store | 0/2 | Complete    | 2026-06-28 |
-| 4. Claude & Terminal Launching | 0/2 | Complete    | 2026-06-28 |
-| 5. CLI Integration | 0/2 | Complete    | 2026-06-28 |
-| 6. Packaging & Distribution | 0/2 | Complete    | 2026-06-28 |
+| 1. Project Foundation | 3/3 | Complete    | 2026-06-28 |
+| 2. Git Worktree Discovery | 2/2 | Complete    | 2026-06-28 |
+| 3. Session Store | 2/2 | Complete    | 2026-06-28 |
+| 4. Claude & Terminal Launching | 2/2 | Complete    | 2026-06-28 |
+| 5. CLI Integration | 2/2 | Complete    | 2026-06-28 |
+| 6. Packaging & Distribution | 2/2 | Complete    | 2026-06-28 |
+| 7. Session Memory Synchronization | 0/2 | Not started | - |
+

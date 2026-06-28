@@ -25,6 +25,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **SESS-05**: Paths are normalized (lowercase, forward slashes, resolved) before use as keys
 - [ ] **SESS-06**: JSON writes are atomic (write temp file, rename) to prevent corruption
 - [ ] **SESS-07**: Corrupt or missing `sessions.json` falls back to empty state without crashing
+- [ ] **SESS-08**: CLI offers `claunch session-log <branch-name>` to print a readable dialogue log of that session by parsing `.claude/projects/.../*.jsonl` files.
+- [ ] **SESS-09**: CLI offers `claunch memory-sync` (or runs automatically on launch) to merge/sync Claude's project `MEMORY.md` across all discovered worktrees under `~/.claude/projects/`.
+- [ ] **SESS-10**: Claude sessions are able to access a shared repository summary file or query other sessions' contexts via shell commands.
 
 ### Terminal Launching
 
@@ -102,6 +105,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SESS-05 | Phase 3 | Pending |
 | SESS-06 | Phase 3 | Pending |
 | SESS-07 | Phase 3 | Pending |
+| SESS-08 | Phase 7 | Pending |
+| SESS-09 | Phase 7 | Pending |
+| SESS-10 | Phase 7 | Pending |
 | TERM-01 | Phase 4 | Pending |
 | TERM-02 | Phase 4 | Pending |
 | TERM-03 | Phase 4 | Pending |
@@ -121,8 +127,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PKG-05 | Phase 1 | Pending |
 
 **Coverage:**
-- v1 requirements: 30 total
-- Mapped to phases: 30
+- v1 requirements: 33 total
+- Mapped to phases: 33
 - Unmapped: 0 ✓
 
 ---
