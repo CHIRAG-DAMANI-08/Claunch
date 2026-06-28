@@ -15,7 +15,7 @@ Claunch is built as a linear pipeline: first set up the project foundation and t
 - [x] **Phase 3: Session Store** - Persist and retrieve session-to-branch mappings from JSON file (completed 2026-06-28)
 - [x] **Phase 4: Claude & Terminal Launching** - Build Claude command strings and launch Windows Terminal tabs (completed 2026-06-28)
 - [x] **Phase 5: CLI Integration** - Wire all modules together into the `claunch` command (completed 2026-06-28)
-- [ ] **Phase 6: Packaging & Distribution** - Bundle with tsup and prepare for npm global install
+- [x] **Phase 6: Packaging & Distribution** - Bundle with tsup and prepare for npm global install (completed 2026-06-28)
 
 ## Phase Details
 
@@ -127,4 +127,4 @@ Phase 5 depends on 2, 3, 4. Phase 6 depends on 5.
 | 3. Session Store | 0/2 | Complete    | 2026-06-28 |
 | 4. Claude & Terminal Launching | 0/2 | Complete    | 2026-06-28 |
 | 5. CLI Integration | 0/2 | Complete    | 2026-06-28 |
-| 6. Packaging & Distribution | 0/2 | Not started | - |
+| 6. Packaging & Distribution | 0/2 | Complete    | 2026-06-28 |
