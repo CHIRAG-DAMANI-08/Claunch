@@ -1,6 +1,6 @@
 {
   "name": "claude-claunch",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Native Windows CLI tool that manages multiple Claude Code sessions across Git worktrees",
   "type": "module",
   "bin": {
