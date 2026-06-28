@@ -6,6 +6,9 @@
   "bin": {
     "claunch": "./dist/cli.js"
   },
+  "files": [
+    "dist"
+  ],
   "main": "./dist/index.js",
   "scripts": {
     "build": "tsup",
