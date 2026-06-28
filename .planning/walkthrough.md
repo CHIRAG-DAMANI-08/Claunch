@@ -12,8 +12,12 @@ We successfully built **claunch**, a native Windows CLI tool that opens all Git 
 7. **Entry Point Correction**: Resolved a Windows `npm link` issue where `import.meta.url` resolved to the target directory but `process.argv[1]` remained the symlinked path. By comparing `fs.realpathSync` for both paths, the CLI now runs correctly when invoked globally.
 8. **App Execution Alias Support**: Handled Windows App Execution Aliases which throw permission errors on standard stats checks, resolving them with `lstatSync`.
 
+9. **Dialogue Log Subcommand**: Implemented `claunch log <branch>` (and `claunch session-log <branch>`) which scans `~/.claude/projects/` session logs, parses the raw JSONL dialogue, and outputs a clean conversation transcript (user prompts and Claude responses).
+10. **Automatic Memory Syncing**: Implemented NTFS directory junction link creation to share the `memory/` folder of all worktrees under `~/.claude/projects/` back to the main repository's folder. This automatically merges and synchronizes Claude's `MEMORY.md` learnings in real-time across all worktree terminals.
+11. **Interactive Selection Selector (TUI)**: Implemented an interactive console selection menu (TUI) triggered by default (or with `claunch --menu`). Users can navigate, select multiple worktrees using `Space` to open them all in a new window, or press `o` / `L` to immediately open a worktree in a new tab without losing focus on the menu tab (using `; focus-tab -t 0`).
+
 ## Verification Results
-- **Unit Tests**: 27 unit and integration tests successfully passing across the codebase.
+- **Unit Tests**: 41 unit and integration tests successfully passing across the codebase.
 - **Linting & Compilation**: All TypeScript compiles cleanly; ESLint and Prettier checks pass.
-- **CLI Global Execution**: Running `claunch` locally resolved issues and launched successfully.
+- **CLI Global Execution**: Verified `claunch log main` on active projects outputs clean dialogue logs, and `claunch` opens the selector menu seamlessly.
 
