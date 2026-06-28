@@ -7,6 +7,21 @@ import { SessionStore } from './claude/sessionStore.js';
 import { buildClaudeCommand } from './claude/launchClaude.js';
 import { openWindowsTerminal } from './terminal/openWindowsTerminal.js';
 import { TabSpec, ClaunchError } from './types/index.js';
+import { getSessionLog } from './claude/sessionLog.js';
+import { syncMemoryJunctions } from './claude/memorySync.js';
+import { startInteractiveMenu } from './terminal/interactiveMenu.js';
+
+function handleError(error: unknown): void {
+  if (error instanceof ClaunchError) {
+    console.error(error.message);
+    process.exitCode = 1;
+  } else {
+    console.error(
+      `An unexpected error occurred: ${error instanceof Error ? error.message : String(error)}`,
+    );
+    process.exitCode = 1;
+  }
+}
 
 export function runCli(argv: string[] = process.argv): void {
   const program = new Command();
@@ -17,7 +32,9 @@ export function runCli(argv: string[] = process.argv): void {
       'Open Claude Code sessions across Git worktrees in Windows Terminal',
     )
     .version('0.1.0')
-    .action(() => {
+    .option('-m, --menu', 'Launch the interactive worktree selector menu (default)')
+    .option('-a, --all', 'Launch all worktrees immediately in a new window')
+    .action(async (options) => {
       try {
         // 1. Verify environment and discover repo root
         const repoRoot = validateEnvironment();
@@ -32,38 +49,51 @@ export function runCli(argv: string[] = process.argv): void {
         // 3. Load/Init session store
         const sessionStore = new SessionStore();
 
-        // 4. Map worktrees to terminal tabs
-        const specs: TabSpec[] = worktrees.map((wt) => {
-          let session = sessionStore.getSession(repoRoot, wt.branch);
-          if (!session) {
-            // PRD: "After first successful launch, remember the mapping forever."
-            // Fall back to the branch name as session name and save it.
-            session = wt.branch;
-            sessionStore.setSession(repoRoot, wt.branch, session);
-          }
+        // 4. Always sync memory directories across worktrees
+        syncMemoryJunctions(repoRoot, worktrees);
 
-          const command = buildClaudeCommand(wt.path, session);
+        if (options.all) {
+          // Map worktrees to terminal tabs
+          const specs: TabSpec[] = worktrees.map((wt) => {
+            let session = sessionStore.getSession(repoRoot, wt.branch);
+            if (!session) {
+              session = wt.branch;
+              sessionStore.setSession(repoRoot, wt.branch, session);
+            }
 
-          return {
-            path: wt.path,
-            branch: wt.branch,
-            command,
-            title: wt.branch,
-          };
-        });
+            const command = buildClaudeCommand(wt.path, session);
 
-        // 5. Open in Windows Terminal
-        openWindowsTerminal(specs);
-      } catch (error) {
-        if (error instanceof ClaunchError) {
-          console.error(error.message);
-          process.exitCode = 1;
+            return {
+              path: wt.path,
+              branch: wt.branch,
+              command,
+              title: wt.branch,
+            };
+          });
+
+          // Open in Windows Terminal
+          openWindowsTerminal(specs);
         } else {
-          console.error(
-            `An unexpected error occurred: ${error instanceof Error ? error.message : String(error)}`,
-          );
-          process.exitCode = 1;
+          // Default: open interactive selection menu
+          await startInteractiveMenu(worktrees, sessionStore, openWindowsTerminal);
         }
+      } catch (error) {
+        handleError(error);
+      }
+    });
+
+  program
+    .command('log')
+    .alias('session-log')
+    .argument('<branch>', 'The branch name or session UUID to read')
+    .description('Print a clean dialogue log of a Claude Code session')
+    .action((branch) => {
+      try {
+        const repoRoot = validateEnvironment();
+        const logText = getSessionLog(repoRoot, branch);
+        console.log(logText);
+      } catch (error) {
+        handleError(error);
       }
     });
 
