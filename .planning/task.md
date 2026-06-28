@@ -1,0 +1,22 @@
+# Task List: Claunch Implementation
+
+- [x] Phase 1: Project Foundation
+  - [x] Configure Node.js TypeScript ESM, tsup, Vitest, ESLint, Prettier
+  - [x] Define type interfaces
+  - [x] Implement environment check utilities with tests
+- [x] Phase 2: Git Worktree Discovery
+  - [x] Parse `git worktree list --porcelain` into sorted active list
+  - [x] Add unit tests for git parsing edge cases
+- [x] Phase 3: Session Store
+  - [x] Implement SessionStore with atomic save and path normalization
+  - [x] Add SessionStore unit tests
+- [x] Phase 4: Claude & Terminal Launching
+  - [x] Implement Claude command builder and wt.exe argument constructor
+  - [x] Add unit tests for launching logic
+- [x] Phase 5: CLI Integration
+  - [x] Wire modules to CLI entry point in `src/cli.ts`
+  - [x] Add integration tests for CLI pipeline
+  - [x] Fix symlink resolution issue for npm linked entry points
+- [x] Phase 6: Packaging & Distribution
+  - [x] Verify production bundling and ESM shebang outputs
+  - [x] Verify global installation E2E execution
