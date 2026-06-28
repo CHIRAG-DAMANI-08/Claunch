@@ -75,7 +75,7 @@ export function runCli(argv: string[] = process.argv): void {
           openWindowsTerminal(specs);
         } else {
           // Default: open interactive selection menu
-          await startInteractiveMenu(worktrees, sessionStore, openWindowsTerminal);
+          await startInteractiveMenu(repoRoot, worktrees, sessionStore, openWindowsTerminal);
         }
       } catch (error) {
         handleError(error);

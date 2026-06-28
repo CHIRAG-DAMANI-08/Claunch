@@ -8,6 +8,7 @@ import { SessionStore } from '../claude/sessionStore.js';
  * multi-selection, and immediate focus-retentive tab launching.
  */
 export function startInteractiveMenu(
+  repoRoot: string,
   worktrees: Worktree[],
   sessionStore: SessionStore,
   openTabsFn: (specs: TabSpec[], options?: { newWindow?: boolean; focusMenu?: boolean }) => void,
@@ -66,7 +67,7 @@ export function startInteractiveMenu(
           branchText = `\x1b[36m${wt.branch}\x1b[0m`;
         }
         
-        const sessionVal = sessionStore.get(wt.path);
+        const sessionVal = sessionStore.getSession(repoRoot, wt.branch);
         const sessionText = sessionVal ? `(session: ${sessionVal})` : '';
         
         const line = `${cursor}${checkbox} ${branchText.padEnd(35)} \x1b[90m${wt.path.padEnd(45)}\x1b[0m \x1b[33m${sessionText}\x1b[0m\n`;
@@ -125,7 +126,7 @@ export function startInteractiveMenu(
         case 'o':
         case 'l': {
           const targetWt = worktrees[cursorIndex];
-          const sessionName = sessionStore.get(targetWt.path) || targetWt.branch;
+          const sessionName = sessionStore.getSession(repoRoot, targetWt.branch) || targetWt.branch;
           
           const spec: TabSpec = {
             path: targetWt.path,
@@ -152,7 +153,7 @@ export function startInteractiveMenu(
             
           const specs: TabSpec[] = indicesToLaunch.map((idx) => {
             const wt = worktrees[idx];
-            const sessionName = sessionStore.get(wt.path) || wt.branch;
+            const sessionName = sessionStore.getSession(repoRoot, wt.branch) || wt.branch;
             return {
               path: wt.path,
               title: wt.branch,

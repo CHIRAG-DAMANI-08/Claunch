@@ -29,7 +29,7 @@ describe('interactiveMenu', () => {
     mockStdoutWrite = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
     
     mockSessionStore = {
-      get: vi.fn().mockReturnValue('session-name'),
+      getSession: vi.fn().mockReturnValue('session-name'),
     };
     mockOpenTabsFn = vi.fn();
   });
@@ -42,7 +42,7 @@ describe('interactiveMenu', () => {
   });
 
   it('immediately returns if worktree list is empty', async () => {
-    const promise = startInteractiveMenu([], mockSessionStore, mockOpenTabsFn);
+    const promise = startInteractiveMenu('C:\\Code\\vaani', [], mockSessionStore, mockOpenTabsFn);
     await expect(promise).resolves.toBeUndefined();
   });
 
@@ -55,7 +55,7 @@ describe('interactiveMenu', () => {
       return process.stdin;
     });
 
-    const promise = startInteractiveMenu(worktrees, mockSessionStore, mockOpenTabsFn);
+    const promise = startInteractiveMenu('C:\\Code\\vaani', worktrees, mockSessionStore, mockOpenTabsFn);
 
     expect(mockStdoutWrite).toHaveBeenCalledWith(expect.stringContaining('\x1b[?25l'));
     expect(mockStdoutWrite).toHaveBeenCalledWith(expect.stringContaining('main'));
@@ -89,7 +89,7 @@ describe('interactiveMenu', () => {
       return process.stdin;
     });
 
-    const promise = startInteractiveMenu(worktrees, mockSessionStore, mockOpenTabsFn);
+    const promise = startInteractiveMenu('C:\\Code\\vaani', worktrees, mockSessionStore, mockOpenTabsFn);
 
     keypressCallback('', { name: 'o' });
     keypressCallback('', { name: 'q' });
