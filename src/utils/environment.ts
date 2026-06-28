@@ -8,7 +8,7 @@
 
 import { execSync } from 'node:child_process';
 import { normalize, join } from 'node:path';
-import { existsSync } from 'node:fs';
+import { lstatSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { ClaunchError } from '../types/index.js';
 
@@ -50,8 +50,11 @@ export function getWindowsTerminalPath(): string {
   } catch {
     const localAppData = process.env.LOCALAPPDATA || join(homedir(), 'AppData', 'Local');
     const fallbackPath = join(localAppData, 'Microsoft', 'WindowsApps', 'wt.exe');
-    if (existsSync(fallbackPath)) {
+    try {
+      lstatSync(fallbackPath);
       return fallbackPath;
+    } catch {
+      // Do nothing, throw below
     }
     throw new ClaunchError('Windows Terminal is required.', 'WT_NOT_FOUND');
   }

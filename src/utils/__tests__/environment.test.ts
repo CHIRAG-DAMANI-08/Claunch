@@ -14,12 +14,12 @@ vi.mock('node:fs', async (importOriginal) => {
   const actual = await importOriginal<typeof import('node:fs')>();
   return {
     ...actual,
-    existsSync: vi.fn(actual.existsSync),
+    lstatSync: vi.fn(),
   };
 });
 
 import { execSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { lstatSync } from 'node:fs';
 import {
   checkGit,
   checkClaude,
@@ -28,7 +28,7 @@ import {
 } from '../environment.js';
 
 const mockedExecSync = vi.mocked(execSync);
-const mockedExistsSync = vi.mocked(existsSync);
+const mockedLstatSync = vi.mocked(lstatSync);
 
 describe('environment validation', () => {
   afterEach(() => {
@@ -79,7 +79,7 @@ describe('environment validation', () => {
       mockedExecSync.mockImplementationOnce(() => {
         throw new Error('not in PATH');
       });
-      mockedExistsSync.mockReturnValueOnce(true);
+      mockedLstatSync.mockReturnValueOnce({} as any);
       expect(() => checkWindowsTerminal()).not.toThrow();
     });
 
@@ -87,7 +87,9 @@ describe('environment validation', () => {
       mockedExecSync.mockImplementationOnce(() => {
         throw new Error('not in PATH');
       });
-      mockedExistsSync.mockReturnValueOnce(false);
+      mockedLstatSync.mockImplementationOnce(() => {
+        throw new Error('not found');
+      });
       expect(() => checkWindowsTerminal()).toThrow(
         new ClaunchError('Windows Terminal is required.', 'WT_NOT_FOUND'),
       );
