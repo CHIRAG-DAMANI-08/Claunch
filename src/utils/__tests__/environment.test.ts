@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ClaunchError } from '../../types/index.js';
 
-// We need to mock child_process before importing the module
+// We need to mock child_process and fs before importing the module
 vi.mock('node:child_process', async (importOriginal) => {
   const actual = await importOriginal<typeof import('node:child_process')>();
   return {
@@ -10,7 +10,16 @@ vi.mock('node:child_process', async (importOriginal) => {
   };
 });
 
+vi.mock('node:fs', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('node:fs')>();
+  return {
+    ...actual,
+    existsSync: vi.fn(actual.existsSync),
+  };
+});
+
 import { execSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import {
   checkGit,
   checkClaude,
@@ -19,6 +28,7 @@ import {
 } from '../environment.js';
 
 const mockedExecSync = vi.mocked(execSync);
+const mockedExistsSync = vi.mocked(existsSync);
 
 describe('environment validation', () => {
   afterEach(() => {
@@ -58,17 +68,26 @@ describe('environment validation', () => {
   });
 
   describe('checkWindowsTerminal', () => {
-    it('succeeds when wt is available', () => {
+    it('succeeds when wt is available in PATH', () => {
       mockedExecSync.mockReturnValueOnce(
         Buffer.from('C:\\Program Files\\wt.exe'),
       );
       expect(() => checkWindowsTerminal()).not.toThrow();
     });
 
-    it('throws with exact PRD message when wt is missing', () => {
+    it('succeeds when wt is not in PATH but exists in local AppData fallback', () => {
       mockedExecSync.mockImplementationOnce(() => {
-        throw new Error('not found');
+        throw new Error('not in PATH');
       });
+      mockedExistsSync.mockReturnValueOnce(true);
+      expect(() => checkWindowsTerminal()).not.toThrow();
+    });
+
+    it('throws with exact PRD message when wt is missing entirely', () => {
+      mockedExecSync.mockImplementationOnce(() => {
+        throw new Error('not in PATH');
+      });
+      mockedExistsSync.mockReturnValueOnce(false);
       expect(() => checkWindowsTerminal()).toThrow(
         new ClaunchError('Windows Terminal is required.', 'WT_NOT_FOUND'),
       );

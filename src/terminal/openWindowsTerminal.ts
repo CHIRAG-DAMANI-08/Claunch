@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
 import { TabSpec, ClaunchError } from '../types/index.js';
-import { checkWindowsTerminal } from '../utils/environment.js';
+import { getWindowsTerminalPath } from '../utils/environment.js';
 
 /**
  * Launches Windows Terminal (wt.exe) with multiple tabs.
@@ -15,8 +15,8 @@ export function openWindowsTerminal(specs: TabSpec[]): void {
     return;
   }
 
-  // 1. Verify wt.exe is available
-  checkWindowsTerminal();
+  // 1. Verify wt.exe is available and get path
+  const wtPath = getWindowsTerminalPath();
 
   try {
     const args: string[] = ['-w', '-1'];
@@ -39,7 +39,7 @@ export function openWindowsTerminal(specs: TabSpec[]): void {
     }
 
     // Spawn wt.exe detached so the parent process can exit cleanly
-    const process = spawn('wt', args, {
+    const process = spawn(wtPath, args, {
       detached: true,
       stdio: 'ignore',
       shell: true, // Necessary on Windows for PATH resolution of wt
