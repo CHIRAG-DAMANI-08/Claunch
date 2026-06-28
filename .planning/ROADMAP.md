@@ -11,7 +11,7 @@ Claunch is built as a linear pipeline: first set up the project foundation and t
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
 - [x] **Phase 1: Project Foundation** - Initialize the TypeScript project with build tooling, types, and environment validation (completed 2026-06-28)
-- [ ] **Phase 2: Git Worktree Discovery** - Parse `git worktree list --porcelain` output into structured data
+- [x] **Phase 2: Git Worktree Discovery** - Parse `git worktree list --porcelain` output into structured data (completed 2026-06-28)
 - [ ] **Phase 3: Session Store** - Persist and retrieve session-to-branch mappings from JSON file
 - [ ] **Phase 4: Claude & Terminal Launching** - Build Claude command strings and launch Windows Terminal tabs
 - [ ] **Phase 5: CLI Integration** - Wire all modules together into the `claunch` command
@@ -123,7 +123,7 @@ Phase 5 depends on 2, 3, 4. Phase 6 depends on 5.
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Project Foundation | 0/3 | Complete    | 2026-06-28 |
-| 2. Git Worktree Discovery | 0/2 | Not started | - |
+| 2. Git Worktree Discovery | 0/2 | Complete    | 2026-06-28 |
 | 3. Session Store | 0/2 | Not started | - |
 | 4. Claude & Terminal Launching | 0/2 | Not started | - |
 | 5. CLI Integration | 0/2 | Not started | - |
