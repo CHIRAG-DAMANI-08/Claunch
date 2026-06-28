@@ -48,29 +48,37 @@ export function startInteractiveMenu(
       let output = '';
       output += '\r\x1b[J'; // Clear screen below
       
-      output += '\x1b[1mClaunch - Interactive Worktree Selector\x1b[0m\n';
-      output += 'Controls: ↑/↓ Navigate | Space Select | Enter Launch Selected (New Window) | o/L Launch Tab (Background) | q Quit\n';
-      output += '─────────────────────────────────────────────────────────────────────────────\n';
+      output += '🚀 \x1b[1m\x1b[35mClaunch\x1b[0m \x1b[90m- Interactive Worktree Selector\x1b[0m\n';
+      output += '💡 \x1b[37mControls: ↑/↓ Navigate | Space Select | Enter Launch (New Window) | o/L Launch Tab (bg) | q Quit\x1b[0m\n';
+      output += '\x1b[90m⚡───────────────────────────────────────────────────────────────────────────────────────────────────\x1b[0m\n';
       
       for (let i = 0; i < worktrees.length; i++) {
         const wt = worktrees[i];
         const isHighlighted = i === cursorIndex;
         const isSelected = selectedIndices.has(i);
         
-        const cursor = isHighlighted ? ' > ' : '   ';
-        const checkbox = isSelected ? '[x]' : '[ ]';
+        const cursor = isHighlighted ? '\x1b[33m ▸ \x1b[0m' : '   ';
+        const checkbox = isSelected ? '🟢' : '⚪';
         
-        let branchText = wt.branch;
+        const rawBranch = wt.isCurrent ? `${wt.branch} (current)` : wt.branch;
+        const paddedBranch = rawBranch.padEnd(25);
+        
+        let branchFormatted = '';
         if (wt.isCurrent) {
-          branchText = `\x1b[32m${wt.branch} (current)\x1b[0m`;
+          branchFormatted = `📌 \x1b[32m\x1b[1m${paddedBranch}\x1b[0m`;
         } else if (isHighlighted) {
-          branchText = `\x1b[36m${wt.branch}\x1b[0m`;
+          branchFormatted = `   \x1b[36m\x1b[1m${paddedBranch}\x1b[0m`;
+        } else {
+          branchFormatted = `   \x1b[37m${paddedBranch}\x1b[0m`;
         }
         
-        const sessionVal = sessionStore.getSession(repoRoot, wt.branch);
-        const sessionText = sessionVal ? `(session: ${sessionVal})` : '';
+        const paddedPath = wt.path.padEnd(50);
+        const pathFormatted = `📂 \x1b[90m${paddedPath}\x1b[0m`;
         
-        const line = `${cursor}${checkbox} ${branchText.padEnd(35)} \x1b[90m${wt.path.padEnd(45)}\x1b[0m \x1b[33m${sessionText}\x1b[0m\n`;
+        const sessionVal = sessionStore.getSession(repoRoot, wt.branch);
+        const sessionFormatted = sessionVal ? `💬 \x1b[33msession: ${sessionVal}\x1b[0m` : '';
+        
+        const line = `${cursor}${checkbox} ${branchFormatted} ${pathFormatted} ${sessionFormatted}\n`;
         output += line;
       }
       
