@@ -1,3 +1,5 @@
+import { realpathSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { Command } from 'commander';
 import { validateEnvironment } from './utils/environment.js';
 import { discoverWorktrees } from './git/discoverWorktrees.js';
@@ -68,7 +70,13 @@ export function runCli(argv: string[] = process.argv): void {
   program.parse(argv);
 }
 
-// Only auto-run if called directly
-if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}`) {
-  runCli();
+try {
+  const entryPath = process.argv[1] ? realpathSync(process.argv[1]) : '';
+  const currentPath = fileURLToPath(import.meta.url);
+  
+  if (entryPath && realpathSync(currentPath) === entryPath) {
+    runCli();
+  }
+} catch {
+  // If resolution fails (e.g. process.argv[1] is undefined/invalid), do not run
 }
