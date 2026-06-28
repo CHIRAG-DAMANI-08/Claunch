@@ -60,9 +60,10 @@ describe('interactiveMenu', () => {
     expect(mockStdoutWrite).toHaveBeenCalledWith(expect.stringContaining('\x1b[?25l'));
     expect(mockStdoutWrite).toHaveBeenCalledWith(expect.stringContaining('main'));
 
-    keypressCallback('', { name: 'j' });
-    keypressCallback('', { name: 'space' });
-    keypressCallback('', { name: 'return' });
+    keypressCallback('', { name: 'j' }); // Move to index 1
+    keypressCallback('', { name: 'space' }); // Select index 1
+    keypressCallback('', { name: 'j' }); // Move to index 2 (Launch Selected)
+    keypressCallback('', { name: 'return' }); // Press Enter to launch
 
     await promise;
 

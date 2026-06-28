@@ -49,7 +49,7 @@ export function startInteractiveMenu(
       output += '\r\x1b[J'; // Clear screen below
       
       output += '🚀 \x1b[1m\x1b[35mClaunch\x1b[0m \x1b[90m- Interactive Worktree Selector\x1b[0m\n';
-      output += '💡 \x1b[37mControls: ↑/↓ Navigate | Space Select | Enter Launch (New Window) | o/L Launch Tab (bg) | q Quit\x1b[0m\n';
+      output += '💡 \x1b[37mControls: ↑/↓ Navigate | Space/Enter Toggle Select | o/L Launch Tab (bg) | q Quit\x1b[0m\n';
       output += '\x1b[90m⚡───────────────────────────────────────────────────────────────────────────────────────────────────\x1b[0m\n';
       
       for (let i = 0; i < worktrees.length; i++) {
@@ -81,13 +81,33 @@ export function startInteractiveMenu(
         const line = `${cursor}${checkbox} ${branchFormatted} ${pathFormatted} ${sessionFormatted}\n`;
         output += line;
       }
+
+      output += '\x1b[90m────────────────────────────────────────────────────────────────────────────────────────────────────\x1b[0m\n';
+
+      const isSelectedLaunch = cursorIndex === worktrees.length;
+      const isAllLaunch = cursorIndex === worktrees.length + 1;
+
+      const cursorSelected = isSelectedLaunch ? '\x1b[33m ▸ \x1b[0m' : '   ';
+      const cursorAll = isAllLaunch ? '\x1b[33m ▸ \x1b[0m' : '   ';
+
+      const selectedLabel = isSelectedLaunch 
+        ? '\x1b[35m\x1b[1m[ Launch Selected Worktrees ]\x1b[0m' 
+        : '\x1b[37m  Launch Selected Worktrees  \x1b[0m';
+
+      const allLabel = isAllLaunch 
+        ? '\x1b[35m\x1b[1m[ Launch All Worktrees ]\x1b[0m' 
+        : '\x1b[37m  Launch All Worktrees  \x1b[0m';
+
+      output += `${cursorSelected}${selectedLabel}\n`;
+      output += `${cursorAll}${allLabel}\n`;
       
       stdout.write(output);
     }
 
     render();
 
-    const linesToMoveUp = worktrees.length + 3;
+    const totalItems = worktrees.length + 2;
+    const linesToMoveUp = worktrees.length + 6;
 
     function rewrite() {
       stdout.write(`\x1b[${linesToMoveUp}A`);
@@ -106,23 +126,25 @@ export function startInteractiveMenu(
       switch (keyName) {
         case 'up':
         case 'k':
-          cursorIndex = (cursorIndex - 1 + worktrees.length) % worktrees.length;
+          cursorIndex = (cursorIndex - 1 + totalItems) % totalItems;
           rewrite();
           break;
           
         case 'down':
         case 'j':
-          cursorIndex = (cursorIndex + 1) % worktrees.length;
+          cursorIndex = (cursorIndex + 1) % totalItems;
           rewrite();
           break;
           
         case 'space':
-          if (selectedIndices.has(cursorIndex)) {
-            selectedIndices.delete(cursorIndex);
-          } else {
-            selectedIndices.add(cursorIndex);
+          if (cursorIndex < worktrees.length) {
+            if (selectedIndices.has(cursorIndex)) {
+              selectedIndices.delete(cursorIndex);
+            } else {
+              selectedIndices.add(cursorIndex);
+            }
+            rewrite();
           }
-          rewrite();
           break;
           
         case 'q':
@@ -133,45 +155,79 @@ export function startInteractiveMenu(
           
         case 'o':
         case 'l': {
-          const targetWt = worktrees[cursorIndex];
-          const sessionName = sessionStore.getSession(repoRoot, targetWt.branch) || targetWt.branch;
-          
-          const spec: TabSpec = {
-            path: targetWt.path,
-            title: targetWt.branch,
-            command: `claude --resume "${sessionName}"`,
-          };
-          
-          // Open in current window, retaining focus on menu tab (0)
-          openTabsFn([spec], { newWindow: false, focusMenu: true });
-          
-          // Output status feedback without altering row count
-          stdout.write(`\r\x1b[K\x1b[36mLaunched tab for "${targetWt.branch}" in background...\x1b[0m`);
-          setTimeout(() => {
-            stdout.write('\r\x1b[K');
-            rewrite();
-          }, 1500);
+          if (cursorIndex < worktrees.length) {
+            const targetWt = worktrees[cursorIndex];
+            const sessionName = sessionStore.getSession(repoRoot, targetWt.branch) || targetWt.branch;
+            
+            const spec: TabSpec = {
+              path: targetWt.path,
+              title: targetWt.branch,
+              command: `claude --resume "${sessionName}"`,
+            };
+            
+            openTabsFn([spec], { newWindow: false, focusMenu: true });
+            
+            stdout.write(`\r\x1b[K\x1b[36mLaunched tab for "${targetWt.branch}" in background...\x1b[0m`);
+            setTimeout(() => {
+              stdout.write('\r\x1b[K');
+              rewrite();
+            }, 1500);
+          }
           break;
         }
 
         case 'return': {
-          const indicesToLaunch = selectedIndices.size > 0 
-            ? Array.from(selectedIndices) 
-            : [cursorIndex];
+          if (cursorIndex < worktrees.length) {
+            // Enter on a worktree row now toggles selection instead of exiting immediately
+            if (selectedIndices.has(cursorIndex)) {
+              selectedIndices.delete(cursorIndex);
+            } else {
+              selectedIndices.add(cursorIndex);
+            }
+            rewrite();
+          } else if (cursorIndex === worktrees.length) {
+            // Launch Selected Worktrees option selected
+            const indicesToLaunch = selectedIndices.size > 0 
+              ? Array.from(selectedIndices) 
+              : [];
+              
+            if (indicesToLaunch.length === 0) {
+              stdout.write(`\r\x1b[K\x1b[31m⚠️ No worktrees selected! Please select using Space or Enter.\x1b[0m`);
+              setTimeout(() => {
+                stdout.write('\r\x1b[K');
+                rewrite();
+              }, 2000);
+              break;
+            }
+
+            const specs: TabSpec[] = indicesToLaunch.map((idx) => {
+              const wt = worktrees[idx];
+              const sessionName = sessionStore.getSession(repoRoot, wt.branch) || wt.branch;
+              return {
+                path: wt.path,
+                title: wt.branch,
+                command: `claude --resume "${sessionName}"`,
+              };
+            });
             
-          const specs: TabSpec[] = indicesToLaunch.map((idx) => {
-            const wt = worktrees[idx];
-            const sessionName = sessionStore.getSession(repoRoot, wt.branch) || wt.branch;
-            return {
-              path: wt.path,
-              title: wt.branch,
-              command: `claude --resume "${sessionName}"`,
-            };
-          });
-          
-          cleanup();
-          openTabsFn(specs, { newWindow: true });
-          resolve();
+            cleanup();
+            openTabsFn(specs, { newWindow: true });
+            resolve();
+          } else if (cursorIndex === worktrees.length + 1) {
+            // Launch All Worktrees option selected
+            const specs: TabSpec[] = worktrees.map((wt) => {
+              const sessionName = sessionStore.getSession(repoRoot, wt.branch) || wt.branch;
+              return {
+                path: wt.path,
+                title: wt.branch,
+                command: `claude --resume "${sessionName}"`,
+              };
+            });
+            
+            cleanup();
+            openTabsFn(specs, { newWindow: true });
+            resolve();
+          }
           break;
         }
       }
