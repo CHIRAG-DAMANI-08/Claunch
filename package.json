@@ -1,15 +1,16 @@
 {
-  "name": "claunch",
-  "version": "0.1.0",
+  "name": "claude-claunch",
+  "version": "0.1.1",
   "description": "Native Windows CLI tool that manages multiple Claude Code sessions across Git worktrees",
   "type": "module",
   "bin": {
     "claunch": "./dist/cli.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
-  "main": "./dist/index.js",
+  "main": "./dist/cli.js",
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
