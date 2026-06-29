@@ -12,6 +12,7 @@ import { getSessionLog } from './claude/sessionLog.js';
 import { syncMemoryJunctions } from './claude/memorySync.js';
 import { startInteractiveMenu } from './terminal/interactiveMenu.js';
 import { checkForUpdates } from './utils/versionCheck.js';
+import { startInstanceManager } from './terminal/instanceManager.js';
 
 function handleError(error: unknown): void {
   if (error instanceof ClaunchError) {
@@ -76,8 +77,16 @@ export function runCli(argv: string[] = process.argv): void {
             };
           });
 
+          // Prepend Instance Manager tab
+          const managerSpec: TabSpec = {
+            path: repoRoot,
+            branch: 'manager',
+            command: 'claunch manage',
+            title: 'manager',
+          };
+
           // Open in Windows Terminal
-          openWindowsTerminal(specs);
+          openWindowsTerminal([managerSpec, ...specs]);
         } else {
           // Default: open interactive selection menu
           await startInteractiveMenu(repoRoot, worktrees, sessionStore, openWindowsTerminal);
@@ -85,6 +94,20 @@ export function runCli(argv: string[] = process.argv): void {
 
         // Await the background check to display any pending upgrade warning
         await updateCheckPromise;
+      } catch (error) {
+        handleError(error);
+      }
+    });
+
+  program
+    .command('manage')
+    .alias('manager')
+    .description('Launch the persistent Instance Manager dashboard')
+    .action(async () => {
+      try {
+        const repoRoot = validateEnvironment();
+        const sessionStore = new SessionStore();
+        await startInstanceManager(repoRoot, sessionStore, openWindowsTerminal);
       } catch (error) {
         handleError(error);
       }

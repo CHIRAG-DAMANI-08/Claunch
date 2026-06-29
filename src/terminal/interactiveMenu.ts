@@ -200,6 +200,13 @@ export function startInteractiveMenu(
               break;
             }
 
+            const managerSpec: TabSpec = {
+              path: repoRoot,
+              branch: 'manager',
+              command: 'claunch manage',
+              title: 'manager',
+            };
+
             const specs: TabSpec[] = indicesToLaunch.map((idx) => {
               const wt = worktrees[idx];
               const sessionName = sessionStore.getSession(repoRoot, wt.branch) || wt.branch;
@@ -211,10 +218,17 @@ export function startInteractiveMenu(
             });
             
             cleanup();
-            openTabsFn(specs, { newWindow: true });
+            openTabsFn([managerSpec, ...specs], { newWindow: true });
             resolve();
           } else if (cursorIndex === worktrees.length + 1) {
             // Launch All Worktrees option selected
+            const managerSpec: TabSpec = {
+              path: repoRoot,
+              branch: 'manager',
+              command: 'claunch manage',
+              title: 'manager',
+            };
+
             const specs: TabSpec[] = worktrees.map((wt) => {
               const sessionName = sessionStore.getSession(repoRoot, wt.branch) || wt.branch;
               return {
@@ -225,7 +239,7 @@ export function startInteractiveMenu(
             });
             
             cleanup();
-            openTabsFn(specs, { newWindow: true });
+            openTabsFn([managerSpec, ...specs], { newWindow: true });
             resolve();
           }
           break;

@@ -70,6 +70,12 @@ describe('interactiveMenu', () => {
     expect(mockOpenTabsFn).toHaveBeenCalledWith(
       [
         {
+          path: 'C:\\Code\\vaani',
+          branch: 'manager',
+          command: 'claunch manage',
+          title: 'manager',
+        },
+        {
           path: 'C:\\Code\\vaani\\.worktrees\\channels-v2',
           title: 'feat/channels-v2',
           command: 'claude --resume "session-name"',

@@ -95,9 +95,10 @@ describe('CLI Integration', () => {
     
     expect(mockOpenWindowsTerminal).toHaveBeenCalledTimes(1);
     const specs = mockOpenWindowsTerminal.mock.calls[0][0];
-    expect(specs).toHaveLength(2);
-    expect(specs[0].command).toBe('claude --resume "main"');
-    expect(specs[1].command).toBe('claude --resume "feat/api"');
+    expect(specs).toHaveLength(3);
+    expect(specs[0].command).toBe('claunch manage');
+    expect(specs[1].command).toBe('claude --resume "main"');
+    expect(specs[2].command).toBe('claude --resume "feat/api"');
   });
 
   it('launches the interactive selection menu by default', () => {
