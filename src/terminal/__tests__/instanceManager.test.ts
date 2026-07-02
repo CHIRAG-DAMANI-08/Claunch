@@ -138,4 +138,37 @@ describe('instanceManager', () => {
     expect(mockSetRawMode).toHaveBeenLastCalledWith(false);
     mockOn.mockRestore();
   });
+
+  it('extracts session name and matches using -r argument and case-insensitivity', async () => {
+    const mockExec = vi.mocked(exec);
+    mockExec.mockImplementation((cmd: string, cb: any) => {
+      if (cmd.includes('Get-CimInstance')) {
+        cb(null, JSON.stringify([
+          { CommandLine: 'claude.exe -r "MAIN"', ProcessId: 700 }
+        ]), '');
+      } else {
+        cb(null, '', '');
+      }
+      return {} as any;
+    });
+
+    let keypressCallback: Function = () => {};
+    const mockOn = vi.spyOn(process.stdin, 'on').mockImplementation((event: string, cb: any) => {
+      if (event === 'keypress') {
+        keypressCallback = cb;
+      }
+      return process.stdin;
+    });
+
+    const promise = startInstanceManager('C:\\Code\\vaani', mockSessionStore, mockOpenTabsFn);
+
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    expect(mockStdoutWrite).toHaveBeenCalledWith(expect.stringContaining('ACTIVE (PID: 700)'));
+
+    keypressCallback('', { name: 'q' });
+
+    await promise;
+    mockOn.mockRestore();
+  });
 });

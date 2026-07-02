@@ -17,12 +17,12 @@ interface ProcessInfo {
  */
 export function getActiveProcesses(): Promise<ProcessInfo[]> {
   return new Promise((resolve) => {
-    const cmd = `powershell.exe -NoProfile -Command "Get-CimInstance Win32_Process -Filter \\"Name='node.exe'\\" | Select-Object -Property CommandLine, ProcessId | ConvertTo-Json"`;
+    const cmd = `powershell.exe -NoProfile -Command "Get-CimInstance Win32_Process -Filter \\"Name='node.exe' or Name='claude.exe'\\" | Select-Object -Property CommandLine, ProcessId | ConvertTo-Json"`;
     
     exec(cmd, (err, stdout) => {
       if (err || !stdout || stdout.trim() === '') {
         // Fall back to wmic
-        const fallbackCmd = 'wmic process where "name=\'node.exe\'" get commandline,processid /format:list';
+        const fallbackCmd = 'wmic process where "name=\'node.exe\' or name=\'claude.exe\'" get commandline,processid /format:list';
         exec(fallbackCmd, (fallbackErr, fallbackStdout) => {
           if (fallbackErr || !fallbackStdout) {
             resolve([]);
@@ -76,8 +76,8 @@ function parseWmicListOutput(output: string): ProcessInfo[] {
 }
 
 function extractSessionName(commandLine: string): string | null {
-  // Matches: --resume "sessionName", --resume 'sessionName', --resume sessionName
-  const match = commandLine.match(/--resume\s+(?:"([^"]+)"|'([^']+)'|(\S+))/i);
+  // Matches: --resume or -r followed by space and the session name
+  const match = commandLine.match(/(?:--resume|-r)\s+(?:"([^"]+)"|'([^']+)'|(\S+))/i);
   if (match) {
     return match[1] || match[2] || match[3] || null;
   }
@@ -298,7 +298,7 @@ export function startInstanceManager(
           // Find if this session matches a worktree
           for (const wt of worktrees) {
             const mapped = sessionStore.getSession(repoRoot, wt.branch) || wt.branch;
-            if (mapped === sessionName || wt.branch === sessionName) {
+            if (mapped.toLowerCase() === sessionName.toLowerCase() || wt.branch.toLowerCase() === sessionName.toLowerCase()) {
               newPids[wt.branch] = p.ProcessId;
             }
           }
