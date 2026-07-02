@@ -44,6 +44,14 @@ export class SessionStore {
   }
 
   /**
+   * Retrieves all session mappings for a given repository.
+   */
+  public getSessionsForRepo(repoPath: string): Record<string, string> {
+    const normRepo = normalizeRepoPath(repoPath);
+    return this.data[normRepo] || {};
+  }
+
+  /**
    * Loads session mapping data. Falls back to empty state on missing or corrupt files.
    */
   private load(): void {

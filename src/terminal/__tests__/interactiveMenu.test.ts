@@ -2,6 +2,24 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { startInteractiveMenu } from '../interactiveMenu.js';
 import { Worktree } from '../../types/index.js';
 
+vi.mock('../../git/gitStats.js', () => {
+  return {
+    getLocalBranches: vi.fn().mockReturnValue([{ name: 'main', head: '1234' }]),
+    findParentBranch: vi.fn().mockReturnValue('main'),
+    getDiffStats: vi.fn().mockReturnValue({ insertions: 10, deletions: 5 }),
+    discoverFeatures: vi.fn().mockReturnValue(['src/claude', 'src/git']),
+  };
+});
+
+vi.mock('../../git/discoverWorktrees.js', () => {
+  return {
+    discoverWorktrees: vi.fn().mockReturnValue([
+      { path: 'C:\\Code\\vaani', branch: 'main', isMain: true, isCurrent: true },
+      { path: 'C:\\Code\\vaani\\.worktrees\\channels-v2', branch: 'feat/channels-v2', isMain: false, isCurrent: false },
+    ]),
+  };
+});
+
 describe('interactiveMenu', () => {
   let mockSetRawMode: any;
   let mockStdoutWrite: any;
@@ -17,25 +35,24 @@ describe('interactiveMenu', () => {
 
   beforeEach(() => {
     vi.resetAllMocks();
-    
-    // Save original process properties
+
     originalIsTTY = process.stdin.isTTY;
     originalSetRawMode = process.stdin.setRawMode;
-    
+
     mockSetRawMode = vi.fn();
     process.stdin.isTTY = true;
     process.stdin.setRawMode = mockSetRawMode;
 
     mockStdoutWrite = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
-    
+
     mockSessionStore = {
       getSession: vi.fn().mockReturnValue('session-name'),
+      getSessionsForRepo: vi.fn().mockReturnValue({ 'main': 'session-name' }),
     };
     mockOpenTabsFn = vi.fn();
   });
 
   afterEach(() => {
-    // Restore original process properties
     process.stdin.isTTY = originalIsTTY;
     process.stdin.setRawMode = originalSetRawMode;
     mockStdoutWrite.mockRestore();
@@ -62,7 +79,6 @@ describe('interactiveMenu', () => {
 
     keypressCallback('', { name: 'j' }); // Move to index 1
     keypressCallback('', { name: 'space' }); // Select index 1
-    keypressCallback('', { name: 'j' }); // Move to index 2 (Launch Selected)
     keypressCallback('', { name: 'return' }); // Press Enter to launch
 
     await promise;
@@ -115,6 +131,42 @@ describe('interactiveMenu', () => {
       ],
       { newWindow: false, focusMenu: true },
     );
+    mockOn.mockRestore();
+  });
+
+  it('jumps focus to branch on number keypress', async () => {
+    let keypressCallback: Function = () => {};
+    const mockOn = vi.spyOn(process.stdin, 'on').mockImplementation((event: string, cb: any) => {
+      if (event === 'keypress') {
+        keypressCallback = cb;
+      }
+      return process.stdin;
+    });
+
+    const promise = startInteractiveMenu('C:\\Code\\vaani', worktrees, mockSessionStore, mockOpenTabsFn);
+
+    keypressCallback('1', { sequence: '1' });
+    keypressCallback('', { name: 'q' });
+
+    await promise;
+    mockOn.mockRestore();
+  });
+
+  it('toggles config mapping display when c is pressed', async () => {
+    let keypressCallback: Function = () => {};
+    const mockOn = vi.spyOn(process.stdin, 'on').mockImplementation((event: string, cb: any) => {
+      if (event === 'keypress') {
+        keypressCallback = cb;
+      }
+      return process.stdin;
+    });
+
+    const promise = startInteractiveMenu('C:\\Code\\vaani', worktrees, mockSessionStore, mockOpenTabsFn);
+
+    keypressCallback('c', { sequence: 'c' });
+    keypressCallback('', { name: 'q' });
+
+    await promise;
     mockOn.mockRestore();
   });
 });

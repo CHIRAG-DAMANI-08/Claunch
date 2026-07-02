@@ -58,4 +58,16 @@ describe('SessionStore', () => {
     store.setSession('C:/my/repo', 'main', 'ok');
     expect(store.getSession('C:/my/repo', 'main')).toBe('ok');
   });
+
+  it('retrieves all sessions for a repository', () => {
+    const store = new SessionStore(TEST_FILE);
+    store.setSession('C:/my/repo', 'main', 'main-session');
+    store.setSession('C:/my/repo', 'feat/x', 'x-session');
+    
+    const sessions = store.getSessionsForRepo('C:/my/repo');
+    expect(sessions).toEqual({
+      'main': 'main-session',
+      'feat/x': 'x-session'
+    });
+  });
 });
