@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { TabSpec, ClaunchError } from '../types/index.js';
+import { type TabSpec, ClaunchError } from '../types/index.js';
 import { getWindowsTerminalPath } from '../utils/environment.js';
 
 /**

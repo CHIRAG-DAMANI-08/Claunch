@@ -51,7 +51,13 @@ export type ClaunchErrorCode =
   | 'CLAUDE_NOT_FOUND'
   | 'WT_NOT_FOUND'
   | 'SESSION_ERROR'
-  | 'WORKTREE_ERROR';
+  | 'WORKTREE_ERROR'
+  | 'CLAUDE_DIR_NOT_FOUND'
+  | 'READ_ERROR'
+  | 'NO_SESSIONS_FOUND'
+  | 'NO_LOGS_FOUND'
+  | 'SESSION_NOT_FOUND'
+  | 'PARSE_ERROR';
 
 /** Custom error class with a machine-readable code for programmatic handling. */
 export class ClaunchError extends Error {

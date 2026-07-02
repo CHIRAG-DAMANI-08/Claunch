@@ -1,6 +1,6 @@
 import { execSync } from 'node:child_process';
 import { normalize, resolve, basename } from 'node:path';
-import { Worktree, ClaunchError } from '../types/index.js';
+import { type Worktree, ClaunchError } from '../types/index.js';
 import { checkGit, checkGitRepo } from '../utils/environment.js';
 
 /**

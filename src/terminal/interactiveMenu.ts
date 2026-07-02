@@ -1,5 +1,5 @@
 import readline from 'node:readline';
-import { Worktree, TabSpec } from '../types/index.js';
+import type { Worktree, TabSpec } from '../types/index.js';
 import { SessionStore } from '../claude/sessionStore.js';
 
 /**
@@ -161,6 +161,7 @@ export function startInteractiveMenu(
             
             const spec: TabSpec = {
               path: targetWt.path,
+              branch: targetWt.branch,
               title: targetWt.branch,
               command: `claude --resume "${sessionName}"`,
             };
@@ -212,6 +213,7 @@ export function startInteractiveMenu(
               const sessionName = sessionStore.getSession(repoRoot, wt.branch) || wt.branch;
               return {
                 path: wt.path,
+                branch: wt.branch,
                 title: wt.branch,
                 command: `claude --resume "${sessionName}"`,
               };
@@ -233,6 +235,7 @@ export function startInteractiveMenu(
               const sessionName = sessionStore.getSession(repoRoot, wt.branch) || wt.branch;
               return {
                 path: wt.path,
+                branch: wt.branch,
                 title: wt.branch,
                 command: `claude --resume "${sessionName}"`,
               };

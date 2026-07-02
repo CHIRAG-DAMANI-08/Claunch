@@ -2,7 +2,7 @@ import readline from 'node:readline';
 import { exec, execSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { join, dirname, basename, normalize } from 'node:path';
-import { TabSpec } from '../types/index.js';
+import type { TabSpec } from '../types/index.js';
 import { SessionStore } from '../claude/sessionStore.js';
 import { discoverWorktrees } from '../git/discoverWorktrees.js';
 
@@ -223,6 +223,7 @@ export function startInstanceManager(
       
       const spec: TabSpec = {
         path: wt.path,
+        branch: wt.branch,
         title: wt.branch,
         command: `claude --resume "${sessionName}"`,
       };

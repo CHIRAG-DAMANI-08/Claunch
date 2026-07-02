@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync, renameSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { homedir } from 'node:os';
-import { SessionData, ClaunchError } from '../types/index.js';
+import { type SessionData, ClaunchError } from '../types/index.js';
 
 /**
  * Normalizes repository paths to ensure case-insensitive matching works correctly.

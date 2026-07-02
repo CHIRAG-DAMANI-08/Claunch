@@ -31,7 +31,7 @@ export function checkGit(): void {
  */
 export function checkClaude(): void {
   try {
-    execSync('claude --version', { stdio: 'pipe', shell: true });
+    execSync('claude --version', { stdio: 'pipe', shell: true as string | boolean });
   } catch {
     throw new ClaunchError('Claude Code CLI not found.', 'CLAUDE_NOT_FOUND');
   }

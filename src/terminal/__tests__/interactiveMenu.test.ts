@@ -77,6 +77,7 @@ describe('interactiveMenu', () => {
         },
         {
           path: 'C:\\Code\\vaani\\.worktrees\\channels-v2',
+          branch: 'feat/channels-v2',
           title: 'feat/channels-v2',
           command: 'claude --resume "session-name"',
         },
@@ -107,6 +108,7 @@ describe('interactiveMenu', () => {
       [
         {
           path: 'C:\\Code\\vaani',
+          branch: 'main',
           title: 'main',
           command: 'claude --resume "session-name"',
         },

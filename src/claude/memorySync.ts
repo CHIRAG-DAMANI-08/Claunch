@@ -1,8 +1,12 @@
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { homedir } from 'node:os';
 import { lstatSync, mkdirSync, readdirSync, readFileSync, writeFileSync, rmSync, symlinkSync } from 'node:fs';
 import { cleanPathToProjectName } from './sessionLog.js';
-import { Worktree } from '../types/index.js';
+import type { Worktree } from '../types/index.js';
+
+function normalizePath(p: string): string {
+  return resolve(p).replace(/\\/g, '/').toLowerCase();
+}
 
 /**
  * Automatically synchronizes the Claude project memory folder across all active worktrees.
@@ -12,7 +16,7 @@ import { Worktree } from '../types/index.js';
 export function syncMemoryJunctions(repoRoot: string, worktrees: Worktree[]): void {
   const projectsDir = join(homedir(), '.claude', 'projects');
   
-  const mainWorktree = worktrees.find((w) => w.isMain);
+  const mainWorktree = worktrees.find((w) => normalizePath(w.path) === normalizePath(repoRoot));
   if (!mainWorktree) {
     return;
   }
@@ -43,7 +47,7 @@ export function syncMemoryJunctions(repoRoot: string, worktrees: Worktree[]): vo
 
   // Synchronize other worktrees
   for (const wt of worktrees) {
-    if (wt.isMain) {
+    if (normalizePath(wt.path) === normalizePath(repoRoot)) {
       continue;
     }
 
